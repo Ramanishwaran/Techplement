@@ -1,0 +1,139 @@
+package org.sample;
+
+import java.util.*;
+
+public class QG {
+
+    private static Map<String, List<Question>> quizzes = new HashMap<>();
+
+    // Method to create a new quiz
+    private static void CreateQuiz(Scanner scanner) {
+        System.out.print("Enter quiz topic: ");
+        String topic = scanner.nextLine();
+        List<Question> questions = new ArrayList<>();
+        System.out.println("Add questions to the quiz. Type 'done' when you finish adding questions.");
+        
+        while (true) {
+            System.out.print("Enter question: ");
+            String questionText = scanner.nextLine();
+            
+            if (questionText.equalsIgnoreCase("done")) break;
+            List<String> options = new ArrayList<>();
+            System.out.println("Enter 4 options:");
+            
+            for (int i = 1; i <= 4; i++) {
+                System.out.print("Option " + i + ": ");
+                options.add(scanner.nextLine());
+            }
+            System.out.print("Enter the correct option number (1-4): ");
+            int correctOption = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            questions.add(new Question(questionText, options, correctOption));
+        }
+        quizzes.put(topic, questions);
+        System.out.println("Quiz on '" + topic + "' created successfully!");
+    }
+
+    // Method to take a quiz
+    private static void TakeQuiz(Scanner scanner) {
+        if (quizzes.isEmpty()) {
+            System.out.println("No quizzes available. Please create a quiz first.");
+            return;
+        }
+        
+        System.out.println("Available quiz topics:");
+        for (String topic : quizzes.keySet()) {
+            System.out.println("- " + topic);
+        }
+        
+        System.out.print("\nEnter quiz topic: ");
+        String topic = scanner.nextLine();
+        
+        if (!quizzes.containsKey(topic)) {
+            System.out.println("No quiz found on the topic: " + topic);
+            return;
+        }
+        
+        List<Question> questions = quizzes.get(topic);
+        int score = 0;
+        System.out.println("\nStarting quiz on '" + topic + "'...");
+        for (int i = 0; i < questions.size(); i++) {
+            Question q = questions.get(i);
+            System.out.println("\n" + (i + 1) + ": " + q.getText());
+
+            List<String> options = q.getOptions();
+            for (int j = 0; j < options.size(); j++) {
+                System.out.println((j + 1) + ". " + options.get(j));
+            }
+
+            System.out.print("Your answer (1-4): ");
+            int answer = scanner.nextInt();
+
+            if (answer == q.getCorrectOption()) {
+                System.out.println("Correct Answer");
+                score++;
+            } else {
+                System.out.println("Incorrect. The correct answer was: " + options.get(q.getCorrectOption() - 1));
+            }
+        }
+
+        System.out.println("\nQuiz completed! Your score: " + score + "/" + questions.size());
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nQuiz Generator Menu");
+            System.out.println("1. Create a Quiz");
+            System.out.println("2. Take a Quiz");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    CreateQuiz(scanner);
+                    break;
+                case 2:
+                    TakeQuiz(scanner);
+                    break;
+                case 3:
+                    System.out.println("Thank you for using Quiz Generator.");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+}
+
+// Question class to represent a single quiz question
+class Question {
+    private String text;
+    private List<String> options;
+    private int correctOption;
+
+    public Question(String text, List<String> options, int correctOption) {
+        this.text = text;
+        this.options = options;
+        this.correctOption = correctOption;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public int getCorrectOption() {
+        return correctOption;
+    }
+	
+}
